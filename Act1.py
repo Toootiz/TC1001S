@@ -1,94 +1,60 @@
+from random import randrange
 from turtle import *
-from freegames import vector
 
-def line(start, end):
-    """Draw line from start to end."""
-    up()
-    goto(start.x, start.y)
-    down()
-    goto(end.x, end.y)
+from freegames import square, vector
 
-def square(start, end):
-    """Draw square from start to end."""
-    up()
-    goto(start.x, start.y)
-    down()
-    begin_fill()
+food = vector(0, 0)
+snake = [vector(10, 0)]
+aim = vector(0, -10)
 
-    for count in range(4):
-        forward(end.x - start.x)
-        left(90)
 
-    end_fill()
-    
+def change(x, y):
+    """Change snake direction."""
+    aim.x = x
+    aim.y = y
 
-def rectangle(start, end):
-    """Draw rectangle from start to end."""
-    up()
-    goto(start.x, start.y)
-    down()
-    begin_fill()
 
-    # Calculate width and height based on start and end points
-    width = end.x - start.x
-    height = end.y - start.y
+def inside(head):
+    """Return True if head inside boundaries."""
+    return -200 < head.x < 190 and -200 < head.y < 190
 
-    # Draw the rectangle
-    for _ in range(2):
-        forward(width)
-        left(90)
-        forward(height)
-        left(90)
 
-    end_fill()
+def move():
+    """Move snake forward one segment."""
+    head = snake[-1].copy()
+    head.move(aim)
 
-def triangle(start, end):
-    """Draw triangle from start to end."""
-    up()
-    goto(start.x, start.y)
-    down()
-    begin_fill()
+    if not inside(head) or head in snake:
+        square(head.x, head.y, 9, 'red')
+        update()
+        return
 
-    # Calculate the side length of the triangle
-    side_length = end.x - start.x
+    snake.append(head)
 
-    # Draw the triangle
-    for _ in range(3):
-        forward(side_length)
-        left(120)
-
-    end_fill()
-
-def tap(x, y):
-    """Store starting point or draw shape."""
-    start = state['start']
-
-    if start is None:
-        state['start'] = vector(x, y)
+    if head == food:
+        print('Snake:', len(snake))
+        food.x = randrange(-15, 15) * 10
+        food.y = randrange(-15, 15) * 10
     else:
-        shape = state['shape']
-        end = vector(x, y)
-        shape(start, end)
-        state['start'] = None
+        snake.pop(0)
 
-def store(key, value):
-    """Store value in state at key."""
-    state[key] = value
+    clear()
 
-state = {'start': None, 'shape': line}
+    for body in snake:
+        square(body.x, body.y, 9, 'black')
+
+    square(food.x, food.y, 9, 'green')
+    update()
+    ontimer(move, 100)
+
+
 setup(420, 420, 370, 0)
-onscreenclick(tap)
+hideturtle()
+tracer(False)
 listen()
-onkey(undo, 'u')
-onkey(lambda: color('black'), 'K')
-onkey(lambda: color('white'), 'W') 
-onkey(lambda: color('green'), 'G')
-onkey(lambda: color('blue'), 'B')
-onkey(lambda: color('red'), 'R')
-onkey(lambda: color('yellow'), 'Y')  # Añadir nuevo color
-onkey(lambda: store('shape', line), 'l')
-onkey(lambda: store('shape', square), 's')
-onkey(lambda: store('shape', circle), 'c')
-onkey(lambda: store('shape', rectangle), 'r')
-onkey(lambda: store('shape', triangle), 't')
+onkey(lambda: change(10, 0), 'Right')
+onkey(lambda: change(-10, 0), 'Left')
+onkey(lambda: change(0, 10), 'Up')
+onkey(lambda: change(0, -10), 'Down')
+move()
 done()
