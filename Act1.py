@@ -21,22 +21,9 @@ def square(start, end):
 
     end_fill()
 
-def draw_circle(start, end):
+def circle(start, end):
     """Draw circle from start to end."""
-    up()
-    goto(start.x, start.y)
-    down()
-    begin_fill()
 
-    # Calculate the radius based on the distance between start and end
-    radius = ((end.x - start.x) ** 2 + (end.y - start.y) ** 2) ** 0.5 / 2
-    # Move to the center of the circle
-    goto((start.x + end.x) / 2, (start.y + end.y) / 2 - radius)
-    setheading(0)
-    down()
-    circle(radius)
-
-    end_fill()
 
 def rectangle(start, end):
     """Draw rectangle from start to end."""
@@ -101,10 +88,9 @@ onkey(lambda: color('white'), 'W')
 onkey(lambda: color('green'), 'G')
 onkey(lambda: color('blue'), 'B')
 onkey(lambda: color('red'), 'R')
-onkey(lambda: color('yellow'), 'Y')  # Añadir nuevo color
 onkey(lambda: store('shape', line), 'l')
 onkey(lambda: store('shape', square), 's')
-onkey(lambda: store('shape', draw_circle), 'c')  # Cambié circle a draw_circle
+onkey(lambda: store('shape', circle), 'c')
 onkey(lambda: store('shape', rectangle), 'r')
 onkey(lambda: store('shape', triangle), 't')
 done()
